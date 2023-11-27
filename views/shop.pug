@@ -1,0 +1,19 @@
+extends layouts/main-layout.pug 
+
+block content
+           
+      main 
+        if prods.length > 0
+          each product in prods
+            article.card.product-item 
+              header.card_header
+                h1.product_title #{product.title}
+              .card_image
+                img(src="https://tse1.mm.bing.net/th?id=OIP.sSiD-Vx7kyByAfg4GwFiNgHaFG&pid=Api&P=0&h=220", alt="Book")
+              .card_content 
+                h2.product_price $19.99
+                p.product_description A very interesting book 
+              .card_actions 
+                button.btn Add to cart
+        else  
+          h3 No products
