@@ -1,22 +1,33 @@
-// const mysql = require('mysql2');
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
 
-// const pool = mysql.createPool({
-//     host:'localhost',
-//     user:'root',
-//     database:'node-tutorial',
-//     password:'root123'
-// });
+let _db;
 
-// module.exports=pool.promise();
+const mongoConnect = (callback) =>{
+    MongoClient.connect('mongodb+srv://pokalerunali52:RRuunnaallii@cluster0.rrpan5p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    .then(client=>{
+        console.log('Connected!!')
+        _db = client.db();
+        callback(client);
+    })
+    .catch(err => {
+        console.log(err)
+        throw err;
+    });
+}
+
+const getDb = () =>{
+    if(_db){
+        return _db;
+    }
+    throw 'No database found';
+}
+
+// module.exports = mongoConnect;
+
+exports.mongoConnect=mongoConnect;
+exports.getDb=getDb;
 
 
-// sequelize database connection
 
-const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('node-tutorial','root','root123',{
-    dialect:'mysql',
-    host:'localhost'
-});
-
-module.exports=sequelize;
