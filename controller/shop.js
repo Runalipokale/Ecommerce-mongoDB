@@ -16,26 +16,25 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findAll({ where: { id: prodId } })
-    .then(products => {
-      res.render('shop/product-detail', {
-        product: products[0],
-        pageTitle: products[0].title,
-        path: '/products'
-      });
-    })
-    .catch(err => console.log(err));
 
-  Product.findByPk(prodId)
+  // Use findById to get the product by ID
+  Product.findById(prodId)
     .then(product => {
+      if (!product) {
+        return res.status(404).render('404', { pageTitle: 'Product not found', path: '/404' });
+      }
       res.render('shop/product-detail', {
         product: product,
         pageTitle: product.title,
         path: '/products'
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.error(err);
+      res.status(500).render('500', { pageTitle: 'Error', path: '/500' });
+    });
 };
+
 
 exports.getIndex = (req, res, next) => {
   Product.fetchAll()

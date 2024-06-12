@@ -12,7 +12,7 @@ router.get('/products', shopController.getProducts);
 
 // extract the information through that product id so instead of writing /product/:productId for productId their 
 //is any random id
-// router.get('/products/:productId', shopController.getProduct);
+router.get('/products/:productId', shopController.getProduct);
 
 // router.get('/cart', shopController.getCart);
 
