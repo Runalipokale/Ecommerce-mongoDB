@@ -5,17 +5,12 @@ const bodyParser = require('body-parser');
 
 const errController = require('../controller/error');
 const mongoConnect = require('../utils/database').mongoConnect;
-
+const User = require('../models/user');
 
 const app = express();
 
 app.use(express.static('views'));
 app.use(express.static('public'));
-
-
-// using template engine for dynamic content views
-//using pug template engine
-// app.set('view engine', 'pug'); 
 
 app.set('view engine', 'ejs');
 app.set('views','views'); 
@@ -28,12 +23,12 @@ app.use(bodyParser.urlencoded({extended:false})); //for passing body of request 
 app.use(express.static(path.join(__dirname, 'public')));// join path of public folder
 
 app.use((req,res,next)=>{
-    // User.findByPk(1)
-    // .then(user=>{
-    //     req.user =user;
-    //     next();
-    // })
-    // .catch(err=>console.log(err));
+    User.findByPk("666da78a478b69895c678865")
+    .then(user=>{
+        req.user =user;
+        next();
+    })
+    .catch(err=>console.log(err));
     next();
 })
 

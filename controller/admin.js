@@ -32,7 +32,7 @@ exports.postAddProduct = (req, res, next) => {
   product.save()
       .then(result => {
           console.log('Product created:', result);
-          res.redirect('/add-product');
+          res.redirect('/products');
       })
       .catch(err => {
           console.error('Error creating product:', err);
