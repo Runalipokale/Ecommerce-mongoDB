@@ -22,7 +22,25 @@ class User{
       
    }
    addToCart(product){
-      const updatedCart = {items:[{productId: new mongodb.ObjectId(product._id),quantity:1}]};
+
+      // if item exist in the cart quntity get increases
+      const cartProductIndex = this.cart.items.findIndex(cp=>{
+         return cp.productId.toString() === product._id.toString();
+      });
+
+      let newQuantity= 1;
+      const updatedCartItem = [...this.cart.items];
+
+      if(cartProductIndex >=0){
+         newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+         updatedCartItem[cartProductIndex].quantity = newQuantity
+      }
+      else{
+         updatedCartItem.push({productId: new mongodb.ObjectId(product._id),quantity: newQuantity})
+      }
+      const updatedCart = {
+         items:updatedCartItem
+      }
       const db = getDb();
       return db
       .collection('users')
