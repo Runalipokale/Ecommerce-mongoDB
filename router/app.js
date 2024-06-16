@@ -23,13 +23,13 @@ app.use(bodyParser.urlencoded({extended:false})); //for passing body of request 
 app.use(express.static(path.join(__dirname, 'public')));// join path of public folder
 
 app.use((req,res,next)=>{
-    User.findByPk("666da78a478b69895c678865")
+    User.findById("666da78a478b69895c678865")
     .then(user=>{
-        req.user =user;
+        req.user = new User(user.name , user.email ,user.cart , user._id);
         next();
-    })
+    }) 
     .catch(err=>console.log(err));
-    next();
+    
 })
 
 app.use('/admin',adminRoutes); // for use admin.js data in this module
