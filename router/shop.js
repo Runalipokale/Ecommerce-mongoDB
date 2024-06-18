@@ -14,7 +14,7 @@ router.get('/products', shopController.getProducts);
 //is any random id
 router.get('/products/:productId', shopController.getProduct);
 
-// router.get('/cart', shopController.getCart);
+router.get('/cart', shopController.getCart);
 
 router.post('/cart', shopController.postCart);
 

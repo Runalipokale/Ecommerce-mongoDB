@@ -50,21 +50,18 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
-// exports.getCart = (req, res, next) => {
-//   req.user
-//   .addToCart(Product)
-//   .then(cart=>{
-//     return cart.findAll(Product);
-//   })
-//   .then(products =>{
-//         res.render('shop/cart', {
-//         path: '/cart',
-//         pageTitle: 'Your Cart',
-//         products: products
-//   })
-//   .catch(err=> console.log(err))  
-//   })
-//   .catch(err=> console.log(err))
+exports.getCart = (req, res, next) => {
+  req.user
+  .getCart()
+  .then(products =>{
+        res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        products:products || []
+  });
+  })
+  .catch(err=> console.log(err))
+}
 
   // this method is without the sequelize association
   // Cart.getCart(cart => {
@@ -99,35 +96,6 @@ exports.postCart = (req, res, next) => {
   .catch(err =>{
     console.log(err);
   })
-  // let fetchedCart;
-  // let newQuantity = 1;
-  
-  // req.user
-  // .getCart()
-  // .then(cart=>{
-  //   fetchedCart = cart;
-  //   return cart.getProducts({where:{id:prodId}});
-  // })
-  // .then(products=>{
-  //   let product;
-  //   if(products.length>0){
-  //     product = products[0]
-  // }
-
-  //  if(product){
-  //   const oldQuntity = product.cartItem.quantity;
-  //    newQuantity = oldQuntity + 1;
-  //    return product;
-  //  }
-  //  return Product.findByPk(prodId)
-  // })
-  // .then(product =>{
-  //   return fetchedCart.addProduct(product,{
-  //     through:{quantity:newQuantity}
-  //    })
-  // })
-  // .then(()=>res.redirect('/cart'))
-  // .catch(err => console.log(err))
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {

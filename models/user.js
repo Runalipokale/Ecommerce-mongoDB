@@ -48,6 +48,37 @@ class User{
          {_id: new mongodb.ObjectId(this._id)},
          {$set:{cart:updatedCart}}
       );
+
+   }
+   getCart(){
+      const db = getDb();
+      const productIds = this.cart.items.map(i=>{
+         return i.productId;
+      });
+      return db
+      .collection('products')
+      //$in => this operator takes an array of ID's hence 
+      //every id present in a array will accepted and get back a cursor which get back a reference 
+      .find({_id: {$in: productIds}})
+      .toArray()
+      .then(products=>{
+         //map() => javascript method which create new array from existing array
+          return products.map(p=>{
+            // ... is a spread operator which talking all the elements from existing array
+            return {
+               ...p,
+               quantity:this.cart.items.find(i=>{
+               return i.productId.toString() === p._id.toString()
+            }).quantity
+         }
+          });
+      })
+      .then(items=>{
+         return updatedCart[this.cart.items];
+      })
+      .catch(err=>{
+         console.log("Error while cart loaded!!!")
+      })
    }
    static findById(userId){
      const db = getDb();
@@ -63,5 +94,6 @@ class User{
      })
    }
 }
+
 
 module.exports = User;
