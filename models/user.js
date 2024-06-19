@@ -1,5 +1,6 @@
 const mongodb = require('mongodb');
 const getDb = require('../utils/database').getDb;
+const ObjectId = new mongodb.ObjectId;
 
 class User{
    constructor(username,email,cart,id){
@@ -50,36 +51,48 @@ class User{
       );
 
    }
-   getCart(){
-      const db = getDb();
-      const productIds = this.cart.items.map(i=>{
-         return i.productId;
-      });
-      return db
-      .collection('products')
-      //$in => this operator takes an array of ID's hence 
-      //every id present in a array will accepted and get back a cursor which get back a reference 
-      .find({_id: {$in: productIds}})
-      .toArray()
-      .then(products=>{
-         //map() => javascript method which create new array from existing array
-          return products.map(p=>{
-            // ... is a spread operator which talking all the elements from existing array
-            return {
-               ...p,
-               quantity:this.cart.items.find(i=>{
-               return i.productId.toString() === p._id.toString()
-            }).quantity
-         }
-          });
-      })
-      .then(items=>{
-         return updatedCart[this.cart.items];
-      })
-      .catch(err=>{
-         console.log("Error while cart loaded!!!")
-      })
-   }
+      getCart() {
+         const db = getDb();
+         const productIds = this.cart.items.map(i => {
+           return new mongodb.ObjectId(i.productId);
+         });
+     
+         return db
+           .collection('products')
+           // $in operator use for looking at particular field in the array 
+           .find({ _id: { $in: productIds } })
+           .toArray()
+           .then(products => {
+             if (!products) {
+               throw new Error('Products not found');
+             }
+             
+             // map method create new array form existing array element 
+             const cartItems = products.map(p => {
+               const cartItem = this.cart.items.find(i => {
+                 return i.productId.toString() === p._id.toString();
+               });
+     
+               if (!cartItem) {
+                 console.error('Cart item not found for product:', p);
+                 return null;
+               }
+               return {
+
+                  // ... is a spread operator which takes all the present properties of the object 
+                 ...p,
+                 quantity: cartItem.quantity
+               };
+             }).filter(item => item !== null); // Filter out null items
+     
+             console.log('Mapped cart items:', cartItems); // Log cart items with quantities
+             return cartItems;
+           })
+           .catch(err => {
+             console.error("Error while loading cart:", err);
+             throw err; // Propagate the error
+           });
+       }
    static findById(userId){
      const db = getDb();
      return db
