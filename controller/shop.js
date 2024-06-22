@@ -63,27 +63,6 @@ exports.getCart = (req, res, next) => {
   .catch(err=> console.log(err))
 }
 
-  // this method is without the sequelize association
-  // Cart.getCart(cart => {
-  //   Product.findAll(products => {
-  //     const cartProducts = [];
-  //     for (product of products) {
-  //       const cartProductData = cart.products.find(prod => prod.id === product.id);
-  //       if (cartProductData) {
-  //         cartProducts.push({ productData: product, qty: cartProductData.qty });
-  //       }
-  //     }
-  //     res.render('shop/cart', {
-  //       path: '/cart',
-  //       pageTitle: 'Your Cart',
-  //       products: cartProducts
-  //     });
-  //   });
-  // });
-
-
-// };
-
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
@@ -92,6 +71,7 @@ exports.postCart = (req, res, next) => {
   })
   .then(result=>{
      console.log(result);
+     res.redirect('/cart');
   })
   .catch(err =>{
     console.log(err);
@@ -100,22 +80,9 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  // Product.findByPk(prodId, product => {
-  //   Cart.deleteProduct(prodId, product.price);
-  //   res.redirect('/cart');
-  // });
-
-  //by association in sequelize
   req.user
-  .getCart()
-  .then(cart=>{
-    return cart.getProducts({where:{id:prodId}})
-  })
-  .then(products=>{
-    product = products[0]
-    return product.cartItem.destroy()
-  })
-  .then((result)=>res.redirect('/cart'))
+  .deleteItemFromCart(prodId)
+  .then(result=>res.redirect('/cart'))
   .catch(err => console.log(err))
 };
 
