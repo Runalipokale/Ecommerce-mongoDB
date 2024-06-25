@@ -1,7 +1,7 @@
 {
-  "name": "authentication",
+  "name": "Ecommerce-App",
   "version": "1.0.0",
-  "description": "basic app for security",
+  "description": "this an Ecommerce application build using mongodb , node.js and express for backend and javascript as a frontend",
   "main": "app.js",
   "dependencies": {
     "body-parser": "^1.20.1",
