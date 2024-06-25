@@ -2,9 +2,9 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser'); 
+const mongoose = require('mongoose');
 
 const errController = require('../controller/error');
-const mongoConnect = require('../utils/database').mongoConnect;
 const User = require('../models/user');
 
 const app = express();
@@ -23,12 +23,12 @@ app.use(bodyParser.urlencoded({extended:false})); //for passing body of request 
 app.use(express.static(path.join(__dirname, 'public')));// join path of public folder
 
 app.use((req,res,next)=>{
-    User.findById("666da78a478b69895c678865")
-    .then(user=>{
-        req.user = new User(user.name , user.email ,user.cart , user._id);
-        next();
-    }) 
-    .catch(err=>console.log(err));
+    // User.findById("666da78a478b69895c678865")
+    // .then(user=>{
+    //     req.user = new User(user.name , user.email ,user.cart , user._id);
+    //     next();
+    // }) 
+    // .catch(err=>console.log(err));
     
 })
 
@@ -46,6 +46,10 @@ app.use(shopRoutes); // for use shop.js data in this module
 // another way to send 404 page not found err by adding html file path
 app.use(errController.getError);
 
-mongoConnect(()=>{
+mongoose.connect('mongodb+srv://pokalerunali52:RRuunnaallii@cluster0.rrpan5p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+.then(result=>{
     app.listen(3000);
-});
+})
+.catch(err=>{
+    console.log(err)
+})
