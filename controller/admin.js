@@ -32,7 +32,8 @@ exports.postAddProduct = (req, res, next) => {
     title:title, 
     price:price, 
     description:description, 
-    imageUrl:imageUrl
+    imageUrl:imageUrl,
+    userId: req.user
   });
 
   product.save()
@@ -91,10 +92,11 @@ exports.postEditProduct = (req,res,next)=>{
 
 exports.postDeleteProduct=(req,res,next)=>{
   const prodId = req.body.productId;
-  Product.deleteOne(prodId)
+  //instead deleteOne we can user findByIdAndRemove method offers by mongooes
+  Product.findById(prodId).deleteOne()
  .then(()=>{
    console.log('Product deleted!!');
-   res.redirect('/admin/products')
+   res.redirect('/products')
  })
  .catch()
 }

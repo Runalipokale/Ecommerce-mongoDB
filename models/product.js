@@ -18,6 +18,11 @@ const productSchema = new Schema({
     imageUrl:{
         type:String,
         require:true
+    },
+    userId:{
+        type:Schema.Types.ObjectId,
+        ref:'User', // ref is used to store refference key of another schema (i.e foreign key)
+        require:true
     }
 });
 

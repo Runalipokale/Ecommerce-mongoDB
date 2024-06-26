@@ -12,6 +12,16 @@ const userSchema = new Schema({
         type:String,
         require:true,
         unique:true
+    },
+    cart:{
+        //this is how we store emberded data cart is a field in which we store items array
+        //items array is consist of productId and quantity 
+        //productId => it is a speacial type of schema provided by mongoose
+        //ref => used to store foreign key 
+        items:[
+            {productId:{type: Schema.Types.ObjectId, ref:'Product',require:true},
+            quantity:{type:Number , require:true}}
+        ]
     }
 })
 
