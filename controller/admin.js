@@ -3,6 +3,13 @@ const Product = require('../models/product');
 //using mongooes
 exports.getProducts = (req, res, next) => {
   Product.find()
+  // select() => this method is used to select and unselect 
+  //the data field the data which is pass in the method is extracted from the database 
+  // and the data which you want to excluded is indicated by(-) sign
+  // .select('title price -_id')
+  
+  //populate => this is a method which tell mongoose populate certain field with all the details
+  // .populate('userId','name')
     .then(products => {
       res.render('admin/products', {
         prods: products,
