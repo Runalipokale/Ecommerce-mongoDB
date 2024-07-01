@@ -19,12 +19,22 @@ const userSchema = new Schema({
         //productId => it is a speacial type of schema provided by mongoose
         //ref => used to store foreign key 
         items:[
-            {productId:{type: Schema.Types.ObjectId, ref:'Product',require:true},
-            quantity:{type:Number , require:true}}
-        ]
+            {
+                productId:
+                {
+                    type: Schema.Types.ObjectId,
+                    ref:'Product',
+                    require:true
+                },
+                quantity:
+                {
+                    type:Number, 
+                 require:true
+        }
     }
+]
+}
 })
-
 userSchema.methods.addToCart = function(product){
 // if item exist in the cart quntity get increases
       const cartProductIndex = this.cart.items.findIndex(cp=>{
@@ -48,11 +58,6 @@ userSchema.methods.addToCart = function(product){
       return this.save()
 }
 
-// userSchema.methods.removeFromCart = function(productId){
-//     const updatedCartItem = this.cart.items.filter(item=>{
-//        return this.cart.populate(-this.item)
-//     })
-// }
 module.exports = mongoose.model('User',userSchema);
 
 

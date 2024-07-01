@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -53,8 +52,11 @@ exports.getIndex = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   req.user
-  Product.find()
-  .then(products =>{
+  .populate('cart.items.productId')
+  .then(user =>{
+    const products = user.cart.items.map(item=>{
+      return { product:item.productId , quantity:item.quantity}
+    })
         res.render('shop/cart', {
         path: '/cart',
         pageTitle: 'Your Cart',
@@ -68,6 +70,9 @@ exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
   .then(product=>{
+    if(!product){
+      return res.redirect('/')
+    }
     return req.user.addToCart(product);
   })
   .then(result=>{
@@ -82,8 +87,20 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
-  .filter(prodId)
-  .then(result=>res.redirect('/cart'))
+  // receiving the cart item data i.e productId
+  .populate('cart.items.productId')
+  // finding the product with the received productId
+  .then(user=>{
+    //remove the product from cart array having this id
+    user.cart.items = user.cart.items.filter(item=>
+      //converting the product id to string if it is not match to product id remove the product form array
+      item.productId._id.toString() === prodId); 
+      //save the updated user document
+      return user.save()
+    })
+  .then(result=>
+    res.redirect('/cart')
+  )
   .catch(err => console.log(err))
 };
 
