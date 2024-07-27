@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -87,13 +88,13 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
-  // receiving the cart item data i.e productId
+  //receiving the cart item data i.e productId
   .populate('cart.items.productId')
-  // finding the product with the received productId
+  //finding the product with the received productId
   .then(user=>{
     //remove the product from cart array having this id
     user.cart.items = user.cart.items.filter(item=>
-      //converting the product id to string if it is not match to product id remove the product form array
+      //converting the product id to string if it is match to product id remove the product form array
       item.productId._id.toString() === prodId); 
       //save the updated user document
       return user.save()
@@ -106,7 +107,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 //placing order 
 exports.postOrder = (req,res,next)=>{
-  let fetchedCart;
   req.user
   .addOrder() // this give access to the cart
     .then(result=>{
@@ -117,12 +117,21 @@ exports.postOrder = (req,res,next)=>{
 
 exports.getOrders = (req, res, next) => {
   req.user
-  .getOrders()
+  .populate('order.items.productId')
+  console.log("populated user : "+order.items.productId)
+  .then(user=>{
+    const order = user.order.items.map(item=>{
+      return{
+        product:item.productId,
+        quantity:item.quantity
+      }
+    })
+  })
   .then(orders=>{
     res.render('shop/orders', {
       path: '/orders',
       pageTitle: 'Your Orders',
-      orders: orders
+      orders: orders || []
     });
 
   })

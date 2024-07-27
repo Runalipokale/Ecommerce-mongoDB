@@ -30,10 +30,26 @@ const userSchema = new Schema({
                 {
                     type:Number, 
                  require:true
-        }
+                }
+            }
+        ]
+    },
+    order:{
+        items:[
+            {
+                productId:{
+                    type: Schema.Types.ObjectId,
+                    ref:'Product',
+                    required:true
+                },
+                quantity:{
+                    type:Number,
+                    required:true
+                }
+            }
+        ],
+        _id: mongoose.Schema.Types.ObjectId
     }
-]
-}
 })
 userSchema.methods.addToCart = function(product){
 // if item exist in the cart quntity get increases
@@ -56,6 +72,12 @@ userSchema.methods.addToCart = function(product){
       }
       this.cart =  updatedCart;
       return this.save()
+}
+
+
+userSchema.methods.addOrder = function(productId){
+    this.order.items = this.cart.items;
+    return this.save();
 }
 
 module.exports = mongoose.model('User',userSchema);
