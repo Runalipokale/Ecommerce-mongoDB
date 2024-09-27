@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Order = require('../models/order');
 const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
@@ -108,7 +109,21 @@ exports.postCartDeleteProduct = (req, res, next) => {
 //placing order 
 exports.postOrder = (req,res,next)=>{
   req.user
-  .addOrder() // this give access to the cart
+  .populate('cart.items.productId')
+  .then(user =>{
+    console.log(user.cart.items);
+    const products = user.cart.items.map(i=>{
+      return {quantity:i.quantity,products:{...i.productId._doc}};
+    });
+    const order = new Order({
+      user:{
+        name:req.body.username,
+        userId:req.body.id
+      },
+      products:products
+    });
+    return order.save();
+  })
     .then(result=>{
       res.redirect('/orders');
     })
@@ -116,16 +131,17 @@ exports.postOrder = (req,res,next)=>{
   }
 
 exports.getOrders = (req, res, next) => {
-  req.user
+  User.findById(req.user._id)
   .populate('order.items.productId')
-  console.log("populated user : "+order.items.productId)
   .then(user=>{
-    const order = user.order.items.map(item=>{
+    console.log(user.order);
+    const orders = user.order.items.map(item=>{
       return{
         product:item.productId,
         quantity:item.quantity
       }
     })
+    return orders;
   })
   .then(orders=>{
     res.render('shop/orders', {
