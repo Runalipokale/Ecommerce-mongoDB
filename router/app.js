@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({extended:false})); //for passing body of request 
 app.use(express.static(path.join(__dirname, 'public')));// join path of public folder
 
 app.use((req,res,next)=>{
-    User.findById("66f6887252cccb693a699491")
+    User.findById("66f7d59095c6195e0ed6d46d")
     .then(user=>{
         req.user = user;
         next();
