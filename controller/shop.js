@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
 const User = require('../models/user');
+const order = require('../models/order');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -110,46 +111,52 @@ exports.postCartDeleteProduct = (req, res, next) => {
 exports.postOrder = (req,res,next)=>{
   req.user
   .populate('cart.items.productId')
-  .then(user =>{
-    console.log(user.cart.items);
+  // .execPopulate()
+  .then(user=>{
     const products = user.cart.items.map(i=>{
-      return {quantity:i.quantity,product:{...i.productId._doc}};
+      return { 
+        quantity:i.quantity, 
+        product:{...i.productId._doc}
+      };
     });
-    const order = new Order({
-      user:{
-        name:req.user.username,
-        userId:req.user._id
-      },
-      products:products
+    const order = new Order({ //according to schema create the order object 
+       user:{
+         userId : req.user._id,
+         username : req.user.username
+       },
+       products:products
     });
     return order.save();
   })
-    .then(result=>{
-      res.redirect('/orders');
-    })
-    .catch(err => console.log(err))
-  }
+  .then(result=>{
+     req.user.clearCart();
+     res.redirect('/orders');
+     console.log('Order placed!!') 
+  })
+  .catch(err=>{
+    console.log("Error while placing the order",err);
+  })
+}
 
 exports.getOrders = (req, res, next) => {
-  User.findById(req.user._id)
-  .populate('order.items.productId')
-  .then(user=>{
-    console.log(user.order);
-    const orders = user.order.items.map(item=>{
-      return{
-        product:item.productId,
-        quantity:item.quantity
-      }
-    })
-    return orders;
-  })
+  // User.findById(req.user._id)
+  // .populate('order.items.productId')
+  // .then(Order=>{
+  //   const orders = order.items.map(item=>{
+  //     return{
+  //       product:item.productId,
+  //       quantity:item.quantity
+  //     }
+  //   })
+  //   return orders;
+  // })
+  Order.find({"user.userId":req.user._id})
   .then(orders=>{
     res.render('shop/orders', {
       path: '/orders',
       pageTitle: 'Your Orders',
       orders: orders || []
     });
-
   })
   .catch(err => console.log(err))
 };

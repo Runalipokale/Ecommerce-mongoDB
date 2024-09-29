@@ -6,15 +6,18 @@ const orderSchema = new Schema({
     products:[
         {
             productId:{
-                type:mongoose.SchemaTypes.ObjectId,
+                type:Schema.Types.ObjectId,
                 ref:'Product',
                 require:'true'
             },
-            quantity:{type:Number,require:'true'}
+            quantity:{
+                type:Number,
+                require:'true'
+            }
         }
     ],
     user:{
-        name:{
+        username:{
             type:String,
             require:'true'
         },
